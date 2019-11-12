@@ -1,0 +1,24 @@
+/* styles */
+/* called by your view template */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', serif;
+  margin: 2em;
+}
+
+h1 {
+  color: #373fff;
+}
+
+iframe{
+  margin: 0; 
+  padding: 0;
+  line-height: 0;
+  display: block;
+}
