@@ -7,7 +7,8 @@ const app = express();
 const Prism = require('prismjs');
 const fs = require('fs');
 const path = require('path')
-
+const pretty = require('pretty')
+const beautify = require('js-beautify').js;
 
 const getFile = (file) => {
   return new Promise(resolve => {
@@ -34,17 +35,23 @@ app.get("/", function(request, response) {
 });
 
 
+app.get("/htmlsrc", async function(request, response) {
+  let {html = ''} = request.query
+  let render = html
+  let snippet = await attachStyle()    
+  snippet += `
+<pre class='language-html'><code>${Prism.highlight(pretty(render), Prism.languages.html, 'html')}</code></pre>
+  `     
+  response.send(snippet);        
+});
+
 app.get("/html/:file", async function(request, response) {
   let {file} = request.params 
   let res = await getFile(__dirname + `/snippets/html/${file}.html`)      
   if(res.success){
     let snippet = await attachStyle()    
     snippet += `
-      <code>
-        <pre class='language-html'>
-          ${Prism.highlight(res.data, Prism.languages.html, 'html')}
-        </pre>
-      </code>
+<pre class='language-html'><code>${Prism.highlight(pretty(res.data), Prism.languages.html, 'html')}</code></pre>
     `     
     response.send(snippet);        
   }
@@ -60,17 +67,24 @@ app.get("/js/:file", async function(request, response) {
   if(res.success){    
     let snippet = await attachStyle()    
     snippet += `
-      <code>
-        <pre class='language-javascript'>
-          ${Prism.highlight(res.data, Prism.languages.javascript, 'javascript')}
-        </pre>
-      </code>
+<pre class='language-javascript'><code>${Prism.highlight(res.data, Prism.languages.javascript, 'javascript')}</code></pre>
     `    
     response.send(snippet);    
   }
   else{
     response.sendFile(__dirname + "/views/noresults.html");
   }  
+});
+
+app.get("/jssrc", async function(request, response) {
+  let {js = ''} = request.query
+  let render = beautify(js, { indent_size: 2, space_in_empty_paren: true })
+  let snippet = await attachStyle()    
+  
+  snippet += `
+<pre class='language-html'><code>${Prism.highlight(render, Prism.languages.javascript, 'javascript')}</code></pre>
+  `     
+  response.send(snippet);        
 });
 
 
